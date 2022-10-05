@@ -1,7 +1,15 @@
 import javax.swing.*;
+import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Page extends JFrame {
     JFrame jFrame = new JFrame();
+    public static JTextArea workArea;
+    private JScrollPane scrollPane;
+    private FileDialog saveDia;
     Page() {
         init();
         jFrame.setVisible(true);
@@ -22,6 +30,9 @@ public class Page extends JFrame {
         menuBar.add(menu_view);
         menuBar.add(menu_help);
 
+        workArea = new JTextArea();
+        scrollPane = new JScrollPane(workArea);
+        jFrame.add(scrollPane);
         JMenuItem fileItem_new = new JMenuItem("new");
         JMenuItem fileItem_open = new JMenuItem("open");
         JMenuItem fileItem_save = new JMenuItem("save");
@@ -47,6 +58,31 @@ public class Page extends JFrame {
 
         JMenuItem helpItem_about = new JMenuItem("about");
         menu_help.add(helpItem_about);
+        fileItem_save.addActionListener(e -> fileItem_save());
 
+    }
+    void fileItem_save(){
+        saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
+        File fileS = null;
+
+        saveDia.setVisible(true);
+        String dirPath = saveDia.getDirectory();
+        String fileName = saveDia.getFile();
+        if (!fileName.contains(".txt")) {
+            fileName += ".txt";
+        }
+        if(dirPath == null || fileName == null) {
+            return;
+        }
+        fileS = new File(dirPath,fileName);
+
+        try{
+            BufferedWriter bufw = new BufferedWriter(new FileWriter(fileS));
+            String text = workArea.getText();
+            bufw.write(text);
+            bufw.close();
+        }catch(IOException er){
+            throw new RuntimeException("file saved failed");
+        }
     }
 }

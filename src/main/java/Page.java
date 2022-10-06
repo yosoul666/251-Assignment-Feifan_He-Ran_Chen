@@ -58,13 +58,48 @@ public class Page extends JFrame {
 
         JMenuItem helpItem_about = new JMenuItem("about");
         menu_help.add(helpItem_about);
+
+        fileItem_new.addActionListener(e -> New());
+
+        fileItem_exit.addActionListener(e -> exit());
+
+        helpItem_about.addActionListener(e -> about());
+
+        editItem_copy.addActionListener(e -> Copy());
+
+        editItem_paste.addActionListener(e -> Paste());
+
+        editItem_cut.addActionListener(e -> Cut());
+
         fileItem_save.addActionListener(e -> fileItem_save());
+    }
+
+    void New() {
+        new Page();
+    }
+
+    void exit(){
+        jFrame.dispose();
+    }
+
+
+    void Cut(){workArea.cut();}
+
+    void Copy(){
+        workArea.copy();
+    }
+
+    void Paste(){
+        workArea.paste();
+    }
+
+    void about(){
+        JOptionPane.showMessageDialog(null,"HEFEIFANCHWENRANSHINIUMA","About Us",JOptionPane.PLAIN_MESSAGE);
 
     }
     void fileItem_save(){
         saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
         File fileS = null;
-
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
@@ -75,14 +110,14 @@ public class Page extends JFrame {
             return;
         }
         fileS = new File(dirPath,fileName);
-
         try{
             BufferedWriter bufw = new BufferedWriter(new FileWriter(fileS));
             String text = workArea.getText();
             bufw.write(text);
             bufw.close();
         }catch(IOException er){
-            throw new RuntimeException("file saved failed");
+            throw new RuntimeException("file saved failed!");
         }
     }
+
 }

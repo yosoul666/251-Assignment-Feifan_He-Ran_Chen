@@ -1,4 +1,12 @@
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -103,9 +111,14 @@ public class Page extends JFrame {
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
+        if(fileName.contains(".pdf")){
+            savepdf(dirPath,fileName,fileS);
+            return;
+        }
         if (!fileName.contains(".txt")) {
             fileName += ".txt";
         }
+
         if(dirPath == null || fileName == null) {
             return;
         }
@@ -117,6 +130,37 @@ public class Page extends JFrame {
             bufw.close();
         }catch(IOException er){
             throw new RuntimeException("file saved failed!");
+        }
+    }
+    void savepdf(String dirPath,String fileName,File fileS1){
+
+        if(dirPath == null || fileName == null) {
+            return;
+        }
+        fileS1 = new File(dirPath,fileName);
+        try {
+            String s=workArea.getText();
+            String[] strings = s.split("\n");
+            PDDocument document=new PDDocument();
+            PDPage my_page=new PDPage(PDRectangle.A4);
+            document.addPage(my_page);
+            PDFont font= PDType0Font.load(document, new File("C:/Windows/Fonts/Arial.ttf"));
+            PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
+            my_page.getResources().add(font);
+            //set font for pdf
+            workArea.getText(0,1);
+            for(int i=0;i<strings.length;i++){
+                contentStream.beginText();
+                contentStream.setFont(font,10);
+                contentStream.newLineAtOffset(10,  820-i*20);
+                contentStream.showText(strings[i]);
+                contentStream.endText();
+            }
+            contentStream.close();
+            document.save(fileS1);
+            document.close();
+        }catch (IOException | BadLocationException er){
+            throw new RuntimeException("file saved failed");
         }
     }
 

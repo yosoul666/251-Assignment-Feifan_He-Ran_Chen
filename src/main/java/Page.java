@@ -4,20 +4,29 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.rtf.RTFEditorKit;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class Page extends JFrame {
     JFrame jFrame = new JFrame();
     public static JTextArea workArea;
     private JScrollPane scrollPane;
     private FileDialog saveDia;
+    private static String str="";
     Page() {
         init();
         jFrame.setVisible(true);
@@ -67,6 +76,8 @@ public class Page extends JFrame {
         JMenuItem helpItem_about = new JMenuItem("about");
         menu_help.add(helpItem_about);
 
+        fileItem_open.addActionListener(e -> open());
+
         fileItem_new.addActionListener(e -> New());
 
         fileItem_exit.addActionListener(e -> exit());
@@ -81,6 +92,108 @@ public class Page extends JFrame {
 
         fileItem_save.addActionListener(e -> fileItem_save());
     }
+
+    void open() {
+        JFileChooser jFileChooser = new JFileChooser();
+        int chose = jFileChooser.showOpenDialog(null);
+        if (chose == JFileChooser.CANCEL_OPTION) {
+            return ;
+        }
+        File F = jFileChooser.getSelectedFile();
+        workArea.setText("");
+        jFrame.setTitle(F.getName());
+        if(F.getName().contains(".rtf")){
+            openRtf(F);
+        }else if(F.getName().contains(".odt")){
+            openOdt(F);
+        }else {
+            openElse(F);
+        }
+    }
+
+    void openRtf(File F){
+        DefaultStyledDocument styleDoc = new DefaultStyledDocument();
+        String result;
+        try {
+            InputStream inputStream = new FileInputStream(F);
+            try {
+                new RTFEditorKit().read(inputStream,styleDoc,0);
+                result = new String(styleDoc.getText(0,styleDoc.getLength()).getBytes("ISO8859-1"),"GBK");
+            } catch (IOException | BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        workArea.setText(result);
+    }
+
+    void openOdt(File F){
+        try {
+            ZipFile zipFile = new ZipFile(F);
+            org.w3c.dom.Document doc = null;
+            Enumeration<?> entries = zipFile.entries();
+            ZipEntry entry;
+            while (entries.hasMoreElements()){
+                entry = (ZipEntry)entries.nextElement();
+                if(entry.getName().equals("content.xml")){
+                    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+                    domFactory.setNamespaceAware(true);
+                    DocumentBuilder docBuilder = null;
+                    try {
+                        docBuilder = domFactory.newDocumentBuilder();
+                    } catch (ParserConfigurationException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        doc = docBuilder.parse(zipFile.getInputStream(entry));
+                    } catch (SAXException e) {
+                        throw new RuntimeException(e);
+                    }
+                    NodeList list = doc.getElementsByTagName("text:p");
+                    for (int a = 0; a < list.getLength(); a++){
+                        Node node =list.item(a);
+                        getText(node);
+                        workArea.setText(str);
+                        str = "";
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void getText(org.w3c.dom.Node node) {
+        if (node.getChildNodes().getLength() > 1) {
+            NodeList childNodes = node.getChildNodes();
+            for (int a = 0; a < childNodes.getLength(); a++) {
+                getText(node.getChildNodes().item(a));
+            }
+        } else {
+            if (node.getNodeValue() != null) {
+                str = str + node.getNodeValue();
+            }
+            if (node.getFirstChild() != null) {
+                str = str + node.getFirstChild().getNodeValue();
+            }
+        }
+    }
+
+    void openElse(File F){
+        if (F != null) {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(F));
+                String line;
+                while((line = br.readLine()) != null){
+                    workArea.append(line + "\r\n");
+                }
+            }catch (IOException er1){
+                throw new RuntimeException("Failed!！");
+            }
+        }
+    }
+
 
     void New() {
         new Page();

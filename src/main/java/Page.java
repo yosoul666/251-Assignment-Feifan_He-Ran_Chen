@@ -4,6 +4,8 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -23,10 +25,12 @@ import java.util.zip.ZipFile;
 
 public class Page extends JFrame {
     JFrame jFrame = new JFrame();
-    public static JTextArea workArea;
-    private JScrollPane scrollPane;
+    public static org.fife.ui.rsyntaxtextarea.RSyntaxTextArea workArea;
+    private RTextScrollPane scrollPane;
+
     private FileDialog saveDia;
     private static String str="";
+    private int index = 0;
     Page() {
         init();
         jFrame.setVisible(true);
@@ -47,8 +51,9 @@ public class Page extends JFrame {
         menuBar.add(menu_view);
         menuBar.add(menu_help);
 
-        workArea = new JTextArea();
-        scrollPane = new JScrollPane(workArea);
+        workArea = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
+        scrollPane = new RTextScrollPane(workArea);
+        workArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         jFrame.add(scrollPane);
         JMenuItem fileItem_new = new JMenuItem("new");
         JMenuItem fileItem_open = new JMenuItem("open");
@@ -91,6 +96,63 @@ public class Page extends JFrame {
         editItem_cut.addActionListener(e -> Cut());
 
         fileItem_save.addActionListener(e -> fileItem_save());
+
+        editItem_search.addActionListener(e -> search());
+    }
+
+    void search(){
+        JDialog jDialog = new JDialog(jFrame);
+        jDialog.setBounds(500,200,380,100);
+        //初始化jDialog
+        jDialogInit(jDialog);
+        jDialog.setVisible(true);
+        jDialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+    void jDialogInit(JDialog jDialog){
+        jDialog.setTitle("Search");
+        jDialog.setLayout(null);
+        //Create a plate
+        JPanel pane =new JPanel();
+        //Add plates to the box
+        jDialog.add(pane);
+        //Set the layout of the pane
+        pane.setLayout(new FlowLayout(FlowLayout.LEFT));
+        pane.setBounds(0,0,400,70);
+        //Plate contents
+        //Find
+        JLabel lookFor = new JLabel("Find  content    ");
+        JTextField lookFor_field = new JTextField(17);
+        JButton jb1 = new JButton("Find Next");
+
+
+
+        //Add elements to the pane
+        pane.add(lookFor);
+        pane.add(lookFor_field);
+        pane.add(jb1);
+        JButton exit = new JButton("Cancel");
+        pane.add(exit);
+
+
+        jb1.addActionListener(e -> {
+            String word = lookFor_field.getText();
+            int x = workArea.getText().indexOf(word,index);
+            //if(not find) return
+            if(x == -1) {
+                JOptionPane.showMessageDialog(null,"No searching","Warning Message",JOptionPane.PLAIN_MESSAGE);
+                return;
+            }
+            //if find index+length
+            int len = word.length();
+            index = x + len;
+            //Set Shadows
+           workArea.setSelectionStart(x);
+           workArea.setSelectionEnd(x+len);
+        });
+
+        exit.addActionListener(e -> {
+            jDialog.dispose();
+        });
     }
 
     void open() {

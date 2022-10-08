@@ -1,3 +1,10 @@
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedWriter;
@@ -10,6 +17,7 @@ public class Page extends JFrame {
     public static JTextArea workArea;
     private JScrollPane scrollPane;
     private FileDialog saveDia;
+    public static File file;
     Page() {
         init();
         jFrame.setVisible(true);
@@ -59,6 +67,13 @@ public class Page extends JFrame {
         JMenuItem helpItem_about = new JMenuItem("about");
         menu_help.add(helpItem_about);
         fileItem_save.addActionListener(e -> fileItem_save());
+        fileItem_print.addActionListener(e -> {
+            try {
+                printer();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
     }
     void fileItem_save(){
@@ -84,5 +99,36 @@ public class Page extends JFrame {
         }catch(IOException er){
             throw new RuntimeException("file saved failed");
         }
+    }
+    public void createPdf() throws Exception {
+
+    }
+
+    void printer() throws Exception {
+        file=new File("D:","sjofj.pdf");
+        String s = workArea.getText();
+        String[] strings = s.split("\n");
+        PDDocument document=new PDDocument();
+        PDPage my_page=new PDPage(PDRectangle.A4);
+        document.addPage(my_page);
+        PDFont font= PDType0Font.load(document, new File("C:/Windows/Fonts/Arial.ttf"));
+        PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
+        my_page.getResources().add(font);
+
+        //set font for pdf
+        workArea.getText(0,1);
+        for(int i=0;i<strings.length;i++){
+            contentStream.beginText();
+            contentStream.setFont(font,10);
+            contentStream.newLineAtOffset(10,  820-i*20);
+            contentStream.showText(strings[i]);
+            contentStream.endText();
+        }
+        contentStream.close();
+        document.save(file);
+        document.close();
+        print print=new print();
+        print.PDFprint();
+         file.delete();
     }
 }

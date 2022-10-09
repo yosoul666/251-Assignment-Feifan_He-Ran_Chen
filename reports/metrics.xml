@@ -1,0 +1,14 @@
+<METRICS profile="Assignment1" timestamp="ÖÜÈÕ, 9 10ÔÂ 2022 21:55:57 CST">
+	<METRIC category="Class" name="Coupling between objects" abbreviation="CBO">
+		<VALUE measured="Main" value="1.0"/>
+		<VALUE measured="Page" value="5.0"/>
+		<VALUE measured="PageTest" value="1.0"/>
+		<VALUE measured="print" value="2.0"/>
+	</METRIC>
+	<METRIC category="Project" name="Number of methods" abbreviation="METH">
+		<VALUE measured="project" value="24.0"/>
+	</METRIC>
+	<METRIC category="Project" name="Average cyclomatic complexity" abbreviation="v(G)avg">
+		<VALUE measured="project" value="2.5833333333333335"/>
+	</METRIC>
+</METRICS>

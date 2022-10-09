@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 http://pmd.sourceforge.net/report_2_0_0.xsd" version="6.49.0" timestamp="2022-10-09T21:48:13.042">
+<file name="C:\Users\10659\Desktop\251-Assignment1-2022-YIfan-Qiu-Fangxiao-Cui\251-Assignment-Feifan_He-Ran_Chen\src\main\java\Main.java">
+<violation beginline="1" endline="1" begincolumn="1" endcolumn="18" rule="UnnecessaryImport" ruleset="Code Style" class="Main" externalInfoUrl="https://pmd.github.io/pmd-6.49.0/pmd_rules_java_codestyle.html#unnecessaryimport" priority="4">
+Unused import 'java.awt.*'
+</violation>
+</file>
+<file name="C:\Users\10659\Desktop\251-Assignment1-2022-YIfan-Qiu-Fangxiao-Cui\251-Assignment-Feifan_He-Ran_Chen\src\main\java\Page.java">
+<violation beginline="124" endline="124" begincolumn="17" endcolumn="33" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" class="Page$TimeActionListener" method="TimeActionListener" externalInfoUrl="https://pmd.github.io/pmd-6.49.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary use of fully qualified name 'javax.swing.Timer' due to existing import 'javax.swing.*'
+</violation>
+<violation beginline="124" endline="124" begincolumn="43" endcolumn="59" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" class="Page$TimeActionListener" method="TimeActionListener" externalInfoUrl="https://pmd.github.io/pmd-6.49.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary use of fully qualified name 'javax.swing.Timer' due to existing import 'javax.swing.*'
+</violation>
+<violation beginline="266" endline="266" begincolumn="38" endcolumn="53" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" class="Page" method="getText" externalInfoUrl="https://pmd.github.io/pmd-6.49.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary use of fully qualified name 'org.w3c.dom.Node' due to existing import 'org.w3c.dom.Node'
+</violation>
+</file>
+</pmd>

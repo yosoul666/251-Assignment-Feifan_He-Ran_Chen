@@ -18,7 +18,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -27,6 +31,8 @@ public class Page extends JFrame {
     JFrame jFrame = new JFrame();
     public static org.fife.ui.rsyntaxtextarea.RSyntaxTextArea workArea;
     private RTextScrollPane scrollPane;
+
+    private JMenuItem Time;
 
     private FileDialog saveDia;
 
@@ -111,6 +117,24 @@ public class Page extends JFrame {
         });
 
         editItem_search.addActionListener(e -> search());
+
+        Time = new JMenuItem();
+        class TimeActionListener implements ActionListener {
+            public TimeActionListener() {
+                javax.swing.Timer t = new javax.swing.Timer(1000, this);
+                t.start();
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                Date d = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                String currentTime = sdf.format(d);
+                Time.setText(currentTime);
+            }
+        }
+        Time.addActionListener(new TimeActionListener());
+        menuBar.add(Time);
     }
 
     void search() {
@@ -292,7 +316,7 @@ public class Page extends JFrame {
         }
 
         void about () {
-            JOptionPane.showMessageDialog(null, "HEFEIFANCHWENRANSHINIUMA", "About Us", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, "By HeFeiFan and ChenRan", "About Us", JOptionPane.PLAIN_MESSAGE);
         }
         void fileItem_save () {
             saveDia = new FileDialog(this, "save as(A)", FileDialog.SAVE);
@@ -351,10 +375,6 @@ public class Page extends JFrame {
             } catch (IOException | BadLocationException er) {
                 throw new RuntimeException("file saved failed");
             }
-        }
-
-        public void createPdf () throws Exception {
-
         }
 
         void printer () throws Exception {
